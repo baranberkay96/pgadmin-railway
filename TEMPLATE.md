@@ -51,11 +51,25 @@ Railway base service (`_railway-base/postgres.json` values), volume `/var/lib/po
 
 ## Resource estimate
 
-RESOURCE_PLACEHOLDER
+Measured on the test deploy (2026-11-24, idle after login, connecting to the pre-registered server and listing databases): pgAdmin 210-245 MiB, Postgres ~100 MiB, CPU < 0.06 vCPU.
+
+| Service | Idle RAM | Typical RAM | CPU |
+|---|---|---|---|
+| pgAdmin | 230 MB | 300-600 MB (query tool, large result grids, pg_dump) | 0.05 idle, up to 1 during exports |
+| Postgres | 100 MB | 200-500 MB | 0.01-0.3 |
+
+Estimated cost: idle ≈ $3.5/month (0.33 GB RAM + ~0.5 GB volumes); typical ≈ $5-10/month. Minimum plan: **Trial** runs it (both services far under 1 GB; pgAdmin could hit the Free plan's 0.5 GB on large result sets). Hobby recommended for real data (5 GB volumes).
 
 ## Verification checklist
 
-CHECKLIST_PLACEHOLDER
+- [x] Both services SUCCESS; `/misc/ping` 200 through the public domain.
+- [x] Login with the generated credentials → `/browser/`; wrong password stays on `/login`.
+- [x] Server group "Railway" with "Railway Postgres" pre-registered; connect works without typing a password (.pgpass); databases `postgres`, `railway` listed.
+- [x] Redeploy: settings DB and server kept, `.pgpass` refreshed.
+- [x] `PGADMIN_DEFAULT_PASSWORD=abc` + `PGADMIN_RESET_ADMIN=true`: deploy SUCCESS, warning logged, nothing changed.
+- [x] Valid new password + `PGADMIN_RESET_ADMIN=true`: login with the new password works.
+- [x] Fresh deploy with e-mail `not-an-email` and password `abc` (STANDARD 8.29): deploy SUCCESS, admin `admin@{domain}` locked with a random password, warnings logged; setting a valid password and redeploying unlocked it automatically; login and server connect worked.
+- [ ] Post-publish deploy by the real template id (`ship.py publish`).
 
 ## Open questions
 

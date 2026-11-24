@@ -136,7 +136,11 @@ db.execute("UPDATE \"user\" SET locked = 0, login_attempts = 0 WHERE email = ?",
 db.commit()
 '; then
             rm -f "$STATE/admin-locked"
-            log "admin password reset done; set PGADMIN_RESET_ADMIN=false so later password changes in the UI are kept"
+            if is_true "${PGADMIN_RESET_ADMIN:-false}"; then
+                log "admin password reset done; set PGADMIN_RESET_ADMIN=false so later password changes in the UI are kept"
+            else
+                log "admin password reset done; the admin is unlocked"
+            fi
         else
             log "WARNING: admin password reset failed; the old password stays"
         fi
