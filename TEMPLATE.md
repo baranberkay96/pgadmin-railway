@@ -69,7 +69,7 @@ Estimated cost: idle ≈ $3.5/month (0.33 GB RAM + ~0.5 GB volumes); typical ≈
 - [x] `PGADMIN_DEFAULT_PASSWORD=abc` + `PGADMIN_RESET_ADMIN=true`: deploy SUCCESS, warning logged, nothing changed.
 - [x] Valid new password + `PGADMIN_RESET_ADMIN=true`: login with the new password works.
 - [x] Fresh deploy with e-mail `not-an-email` and password `abc` (STANDARD 8.29): deploy SUCCESS, admin `admin@{domain}` locked with a random password, warnings logged; setting a valid password and redeploying unlocked it automatically; login and server connect worked.
-- [ ] Post-publish deploy by the real template id (`ship.py publish`).
+- [x] Post-publish deploy by the real template id: PASS (2026-11-24).
 
 ## Open questions
 
