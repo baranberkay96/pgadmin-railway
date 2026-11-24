@@ -1,5 +1,7 @@
 # Deploy and Host pgAdmin with Railway
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/pgadmin-4-v919-with-postgresql-18?referralCode=20H68q)
+
 pgAdmin 4 is the most widely used open-source administration and development tool for PostgreSQL. This template deploys pgAdmin 4 v9.19 behind its own login, together with a PostgreSQL 18 database that is already registered in pgAdmin, so you can browse tables and run SQL a few minutes after you click deploy.
 
 ## About Hosting pgAdmin
