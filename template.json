@@ -1,0 +1,196 @@
+{
+  "name": "pgAdmin 4 v9.19 with PostgreSQL 18",
+  "description": "PostgreSQL admin web UI with login, plus a ready Postgres 18 database.",
+  "category": "Storage",
+  "tags": [
+    "pgadmin",
+    "postgresql",
+    "postgres",
+    "database",
+    "admin",
+    "gui",
+    "sql"
+  ],
+  "image": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/pgadmin.svg",
+  "upstream": {
+    "pgadmin": "dpage/pgadmin4:9.19.0@sha256:3591b3d02910dcd817dec6fcaa681c278ba6966945283dd0ea0042731c330c83 (pgAdmin 4 v9.19, released 2026-10-29)",
+    "postgres": "ghcr.io/railwayapp-templates/postgres-ssl:18.7@sha256:0abac5c0e29ac4fb1633aa644b4f3beaef29a05b4dc05f93190b5a7fbb0e7089 (= :18 on 2026-11-24)",
+    "checked": "2026-11-24"
+  },
+  "services": {
+    "pgAdmin": {
+      "icon": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/pgadmin.svg",
+      "source": {
+        "repo": "baranberkay96/pgadmin-railway",
+        "rootDirectory": "/services/pgadmin"
+      },
+      "healthcheckPath": "/misc/ping",
+      "healthcheckTimeout": 300,
+      "restartPolicyType": "ON_FAILURE",
+      "restartPolicyMaxRetries": 10,
+      "publicDomain": true,
+      "targetPort": 5050,
+      "tcpProxy": null,
+      "volume": {
+        "mountPath": "/var/lib/pgadmin"
+      },
+      "variables": {
+        "PORT": {
+          "defaultValue": "5050",
+          "description": "Port pgAdmin listens on (Railway routes the public domain and healthcheck here).",
+          "required": false
+        },
+        "PGADMIN_DEFAULT_EMAIL": {
+          "defaultValue": "",
+          "description": "Required. Your login e-mail for the pgAdmin admin account (used on the first start only).",
+          "required": true
+        },
+        "PGADMIN_DEFAULT_PASSWORD": {
+          "defaultValue": "${{secret(24, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+          "description": "Admin password, 8-128 characters (generated). Used on the first start, or with PGADMIN_RESET_ADMIN=true.",
+          "required": false
+        },
+        "PGADMIN_RESET_ADMIN": {
+          "defaultValue": "false",
+          "description": "true = at the next start, set the admin password from PGADMIN_DEFAULT_PASSWORD and unlock the account. Set back to false afterwards.",
+          "required": false
+        },
+        "PRELOAD_PG_NAME": {
+          "defaultValue": "Railway Postgres",
+          "description": "Name of the pre-registered server in the pgAdmin tree (first start only).",
+          "required": false
+        },
+        "PRELOAD_PG_HOST": {
+          "defaultValue": "${{Postgres.RAILWAY_PRIVATE_DOMAIN}}",
+          "description": "Postgres host pre-registered on the first start. Empty = no pre-registered server.",
+          "required": false
+        },
+        "PRELOAD_PG_PORT": {
+          "defaultValue": "${{Postgres.PGPORT}}",
+          "description": "Port of the pre-registered Postgres.",
+          "required": false
+        },
+        "PRELOAD_PG_DB": {
+          "defaultValue": "${{Postgres.PGDATABASE}}",
+          "description": "Maintenance database of the pre-registered Postgres.",
+          "required": false
+        },
+        "PRELOAD_PG_USER": {
+          "defaultValue": "${{Postgres.PGUSER}}",
+          "description": "User of the pre-registered Postgres.",
+          "required": false
+        },
+        "PRELOAD_PG_PASSWORD": {
+          "defaultValue": "${{Postgres.PGPASSWORD}}",
+          "description": "Password of the pre-registered Postgres (written to a .pgpass file in pgAdmin's storage, refreshed at every start).",
+          "required": false
+        },
+        "PRELOAD_PG_SSLMODE": {
+          "defaultValue": "prefer",
+          "description": "libpq sslmode for the pre-registered server (disable, prefer, require, ...).",
+          "required": false
+        },
+        "PGADMIN_CONFIG_MAX_LOGIN_ATTEMPTS": {
+          "defaultValue": "5",
+          "description": "Failed logins before an account is locked (unlock with PGADMIN_RESET_ADMIN=true).",
+          "required": false
+        },
+        "PGADMIN_CONFIG_UPGRADE_CHECK_ENABLED": {
+          "defaultValue": "False",
+          "description": "pgAdmin's online upgrade check (False: no calls to pgadmin.org).",
+          "required": false
+        },
+        "PGADMIN_CONFIG_SESSION_COOKIE_SECURE": {
+          "defaultValue": "True",
+          "description": "Send the session cookie over HTTPS only (Railway domains are HTTPS).",
+          "required": false
+        },
+        "PGADMIN_DISABLE_POSTFIX": {
+          "defaultValue": "true",
+          "description": "Do not start the image's local Postfix (Railway blocks SMTP below Pro).",
+          "required": false
+        },
+        "GUNICORN_THREADS": {
+          "defaultValue": "25",
+          "description": "Request threads in pgAdmin's single gunicorn worker.",
+          "required": false
+        }
+      }
+    },
+    "Postgres": {
+      "icon": "https://devicons.railway.app/i/postgresql.svg",
+      "source": {
+        "image": "ghcr.io/railwayapp-templates/postgres-ssl:18.7@sha256:0abac5c0e29ac4fb1633aa644b4f3beaef29a05b4dc05f93190b5a7fbb0e7089"
+      },
+      "restartPolicyType": "ON_FAILURE",
+      "restartPolicyMaxRetries": 10,
+      "publicDomain": false,
+      "tcpProxy": null,
+      "volume": {
+        "mountPath": "/var/lib/postgresql/data"
+      },
+      "variables": {
+        "PGDATA": {
+          "defaultValue": "/var/lib/postgresql/data/pgdata",
+          "description": "Location where the database will be initialized.",
+          "required": false
+        },
+        "PGHOST": {
+          "defaultValue": "${{RAILWAY_PRIVATE_DOMAIN}}",
+          "description": "Railway private domain name.",
+          "required": false
+        },
+        "PGPORT": {
+          "defaultValue": "5432",
+          "description": "Port to connect to Postgres.",
+          "required": false
+        },
+        "PGUSER": {
+          "defaultValue": "${{ POSTGRES_USER }}",
+          "description": "User for the Railway Data panel.",
+          "required": false
+        },
+        "PGDATABASE": {
+          "defaultValue": "${{POSTGRES_DB}}",
+          "description": "Database for the Railway Data panel.",
+          "required": false
+        },
+        "PGPASSWORD": {
+          "defaultValue": "${{POSTGRES_PASSWORD}}",
+          "description": "Password for the Railway Data panel.",
+          "required": false
+        },
+        "POSTGRES_DB": {
+          "defaultValue": "railway",
+          "description": "Default database created when the image first starts.",
+          "required": false
+        },
+        "DATABASE_URL": {
+          "defaultValue": "postgresql://${{PGUSER}}:${{POSTGRES_PASSWORD}}@${{RAILWAY_PRIVATE_DOMAIN}}:5432/${{PGDATABASE}}",
+          "description": "Private connection URL for other services in this project.",
+          "required": false
+        },
+        "POSTGRES_USER": {
+          "defaultValue": "postgres",
+          "description": "Superuser created when the image first starts.",
+          "required": false
+        },
+        "SSL_CERT_DAYS": {
+          "defaultValue": "820",
+          "description": "SSL certificate expiry in days.",
+          "required": false
+        },
+        "POSTGRES_PASSWORD": {
+          "defaultValue": "${{ secret(32, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\") }}",
+          "description": "Superuser password (generated).",
+          "required": false
+        },
+        "RAILWAY_DEPLOYMENT_DRAINING_SECONDS": {
+          "defaultValue": "60",
+          "description": "Allow Postgres to shut down cleanly.",
+          "required": false
+        }
+      }
+    }
+  }
+}
